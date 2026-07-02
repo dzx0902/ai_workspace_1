@@ -7,10 +7,11 @@
 ## 当前落地状态
 
 - AstrBot 插件已拆出 `client.py`、`config.py`、`utils.py`、`plugin.py` 和 `commands/`，插件入口变成薄组合层。
+- 主仓库源码已统一移动到 `src/`，根目录只保留部署入口、配置、文档和环境模板。
 - Paper Radar 已拆成独立 Git 仓库：`/home/dzx0902/paper_radar_agent`。
 - Paper Radar agent 已提供 `/manifest`，可以被后续 gateway 或 registry 发现。
 - 主仓库已移除 Paper Radar 源码，`docker-compose.yml` 通过 `PAPER_RADAR_AGENT_PATH` 引用独立仓库。
-- `services/rag_api` 已移除重复的 `/papers/*` 路由，Paper Radar 请求只走独立 agent API。
+- `src/services/rag_api` 已移除重复的 `/papers/*` 路由，Paper Radar 请求只走独立 agent API。
 
 ## 当前问题
 
@@ -225,11 +226,11 @@ ai-workspace-deploy
 
 | 当前位置 | 目标归属 | 说明 |
 |---|---|---|
-| `astrbot_plugins/ai_workspace` | `astrbot-agent-hub` | 改成薄适配层，只调用 gateway |
+| `src/astrbot_plugins/ai_workspace` | `astrbot-agent-hub` | 改成薄适配层，只调用 gateway |
 | `paper_radar/` | `paper-radar-agent` | 已拆到 `/home/dzx0902/paper_radar_agent` |
-| `dev_agents/` | `dev-agent` | 代码任务、repo 权限、patch/test 等能力独立 |
-| `scripts/query_kb.py`、`services/rag_api` 的 `/ask` | `rag-agent` | 知识库查询独立 |
-| `scripts/process_file.py`、`web_to_note.py`、`video_to_note.py` | `ingest-agent` | 文件/网页/视频摄取独立 |
+| `src/dev_agents/` | `dev-agent` | 代码任务、repo 权限、patch/test 等能力独立 |
+| `src/scripts/query_kb.py`、`src/services/rag_api` 的 `/ask` | `rag-agent` | 知识库查询独立 |
+| `src/scripts/process_file.py`、`web_to_note.py`、`video_to_note.py` | `ingest-agent` | 文件/网页/视频摄取独立 |
 | `docker-compose.yml` | `ai-workspace-deploy` | 只负责组合服务 |
 
 ## 命令设计
@@ -352,9 +353,9 @@ services:
 
 ### Step 2：把 Paper Radar 从总 API 中移除
 
-- AstrBot 不再调用 `services/rag_api` 的 `/papers/*`。
+- AstrBot 不再调用 `src/services/rag_api` 的 `/papers/*`。
 - AstrBot 或 gateway 直接调用 `paper_radar/paper_radar/api.py` 服务。
-- 删除 `services/rag_api/app.py` 中 Paper Radar 的导入和路由。
+- 删除 `src/services/rag_api/app.py` 中 Paper Radar 的导入和路由。
 
 这是最优先的一刀，因为 Paper Radar 已经基本具备独立服务形态。
 

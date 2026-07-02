@@ -1,6 +1,6 @@
 # Windows one-click startup
 
-This project can be started from Windows with the scripts in `scripts/windows/`.
+This project can be started from Windows with the scripts in `src/scripts/windows/`.
 They start Docker Desktop, run `docker compose up -d` in WSL, and start the
 FastAPI RAG backend when it is not already running.
 
@@ -18,8 +18,8 @@ wsl -l -v
 
 Then update the `WslDistro` default value in:
 
-- `scripts/windows/start-ai-workspace.ps1`
-- `scripts/windows/stop-ai-workspace.ps1`
+- `src/scripts/windows/start-ai-workspace.ps1`
+- `src/scripts/windows/stop-ai-workspace.ps1`
 
 The scripts default to WSL user `dzx0902`. If your WSL user is different,
 update the `WslUser` default value in the same two files.
@@ -35,7 +35,7 @@ From the project root on Windows:
 Or double-click:
 
 ```text
-scripts/windows/aiws.bat
+src/scripts/windows/aiws.bat
 ```
 
 The startup script:
@@ -66,7 +66,7 @@ Stop FastAPI and the docker compose services:
 Or double-click:
 
 ```text
-scripts/windows/stop-aiws.bat
+src/scripts/windows/stop-aiws.bat
 ```
 
 ## Logs

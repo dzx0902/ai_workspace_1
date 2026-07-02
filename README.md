@@ -2,6 +2,35 @@
 
 本仓库保存 AI Workspace 的 AstrBot 接入层、agent 管理层雏形、RAG/Dev/文件处理相关源码，以及 Docker 部署编排。
 
+## 仓库结构
+
+日常维护时主要看这些目录：
+
+```text
+ai_workspace/
+├── src/
+│   ├── astrbot_plugins/ai_workspace/   # AstrBot 聊天入口和命令适配层
+│   ├── dev_agents/                     # 代码开发辅助 agent
+│   ├── scripts/                        # RAG、文件处理、网页/视频处理核心脚本
+│   └── services/rag_api/               # Workspace HTTP API
+├── config/
+│   └── agents.yaml                     # agent 注册表和组件边界
+├── docs/                               # 架构、部署、迁移文档
+├── Dockerfile.astrbot                  # AstrBot 插件镜像
+├── docker-compose.yml                  # 本地/服务器组合部署入口
+├── .env.example                        # 环境变量模板
+└── README.md
+```
+
+这些是本地运行态目录，不属于源码管理：
+
+```text
+astrbot-data/ input/ inbox/ uploads/ processed/ notes/ notes_out/
+kb/ logs/ repos/ tasks/ tmp/ paper_radar/
+```
+
+它们已经被 `.gitignore` 排除，并通过 `.vscode/settings.json` 在 VS Code Explorer 中隐藏。需要查看历史数据时，可以临时关闭 VS Code 的 `files.exclude`。
+
 Paper Radar 已拆分为独立仓库，默认放在本仓库同级目录：
 
 ```text

@@ -1,0 +1,28 @@
+{
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/.pytest_cache": true,
+    "**/.venv": true,
+    "**/astrbot-data": true,
+    "**/inbox": true,
+    "**/input": true,
+    "**/kb": true,
+    "**/logs": true,
+    "**/notes": true,
+    "**/notes_out": true,
+    "**/paper_radar": true,
+    "**/processed": true,
+    "**/projects": true,
+    "**/repos": true,
+    "**/tasks": true,
+    "**/tmp": true,
+    "**/uploads": true
+  },
+  "search.exclude": {
+    "**/astrbot-data": true,
+    "**/paper_radar": true,
+    "**/processed": true,
+    "**/repos": true,
+    "**/tasks": true
+  }
+}

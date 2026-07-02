@@ -1,5 +1,5 @@
 FROM soulter/astrbot:latest
 
-COPY astrbot_plugins/ai_workspace /opt/ai_workspace_plugin
+COPY src/astrbot_plugins/ai_workspace /opt/ai_workspace_plugin
 
 CMD ["sh", "-lc", "rm -rf /AstrBot/data/plugins/ai_workspace && mkdir -p /AstrBot/data/plugins && cp -a /opt/ai_workspace_plugin /AstrBot/data/plugins/ai_workspace && exec python main.py"]
