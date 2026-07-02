@@ -1,10 +1,6 @@
 from __future__ import annotations
 
-from datetime import date
-from pathlib import Path
-import sys
-
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 from dev_agents.core import apply_patch_task, generate_patch, generate_plan, list_repos, repo_diff, run_safe_test
@@ -15,15 +11,6 @@ from scripts.query_kb import query_kb
 from scripts.video_to_note import video_to_note
 from scripts.video_transcribe_to_note import video_transcribe_to_note
 from scripts.web_to_note import web_to_note
-
-PAPER_RADAR_ROOT = Path(__file__).resolve().parents[2] / "paper_radar"
-if str(PAPER_RADAR_ROOT) not in sys.path:
-    sys.path.insert(0, str(PAPER_RADAR_ROOT))
-
-from paper_radar.chat import format_chat_report, format_paper_detail, paper_to_dict
-from paper_radar.pipeline import run_daily as run_paper_radar
-from paper_radar.storage import PaperStorage
-from paper_radar.utils import today_string
 
 app = FastAPI(title="AI Workspace RAG API")
 
@@ -86,13 +73,6 @@ class DevDiffReq(BaseModel):
 class DevApplyReq(BaseModel):
     task_id: str
     confirm: bool = False
-
-
-class PaperRunReq(BaseModel):
-    date: str | None = None
-    limit_llm: int = 20
-    no_llm: bool = True
-    report_limit: int = 20
 
 
 def handle_error(exc: Exception) -> None:
@@ -219,63 +199,5 @@ def dev_task(req: DevReq):
         if req.task_type == "patch":
             return {"ok": True, "result": generate_patch(req.repo_name, req.task_description, mode=req.mode)}
         return {"ok": True, "result": generate_plan(req.repo_name, req.task_description, task_type=req.task_type, mode=req.mode)}
-    except Exception as exc:
-        handle_error(exc)
-
-
-@app.get("/papers/daily")
-def papers_daily(
-    date_value: str | None = Query(default=None, alias="date"),
-    limit: int = 20,
-):
-    try:
-        report_date = date_value or today_string()
-        date.fromisoformat(report_date)
-        limit = max(1, min(limit, 30))
-        papers = PaperStorage().get_candidates_for_date(report_date)
-        return {
-            "ok": True,
-            "date": report_date,
-            "count": len(papers),
-            "papers": [paper_to_dict(paper) for paper in papers[:limit]],
-            "message": format_chat_report(report_date, papers, limit),
-        }
-    except Exception as exc:
-        handle_error(exc)
-
-
-@app.get("/papers/detail/{paper_id:path}")
-def paper_detail(paper_id: str):
-    try:
-        paper = PaperStorage().get_paper(paper_id)
-        if paper is None:
-            raise HTTPException(status_code=404, detail=f"Paper not found: {paper_id}")
-        return {
-            "ok": True,
-            "paper": paper_to_dict(paper),
-            "message": format_paper_detail(paper),
-        }
-    except HTTPException:
-        raise
-    except Exception as exc:
-        handle_error(exc)
-
-
-@app.post("/papers/run")
-def papers_run(req: PaperRunReq):
-    try:
-        report_date = req.date or today_string()
-        date.fromisoformat(report_date)
-        if req.limit_llm < 1 or req.report_limit < 1:
-            raise ValueError("limits must be positive")
-        paths = run_paper_radar(report_date, req.limit_llm, req.no_llm)
-        papers = PaperStorage().get_candidates_for_date(report_date)
-        return {
-            "ok": True,
-            "date": report_date,
-            "paths": [str(path) for path in paths],
-            "count": len(papers),
-            "message": format_chat_report(report_date, papers, min(req.report_limit, 30)),
-        }
     except Exception as exc:
         handle_error(exc)

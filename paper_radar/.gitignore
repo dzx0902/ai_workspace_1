@@ -1,7 +1,0 @@
-.env
-__pycache__/
-.pytest_cache/
-*.py[cod]
-data/papers.db
-data/logs/*.log
-notes/daily/*.md

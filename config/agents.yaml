@@ -1,0 +1,32 @@
+agents:
+  paper-radar:
+    name: Paper Radar
+    kind: external-service
+    base_url: http://paper_radar:8010
+    manifest_url: http://paper_radar:8010/manifest
+    repository: ../paper_radar_agent
+    owner: paper_radar_agent
+
+  workspace:
+    name: AI Workspace
+    kind: local-service
+    base_url: http://rag_api:8001
+    capabilities:
+      - ask
+      - file
+      - web
+      - video
+      - transcribe
+
+  dev:
+    name: Dev Agent
+    kind: local-module
+    module: dev_agents
+    capabilities:
+      - repos
+      - plan
+      - patch
+      - review
+      - test
+      - diff
+      - apply

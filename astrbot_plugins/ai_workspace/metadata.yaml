@@ -1,4 +1,4 @@
 name: ai_workspace
 desc: Low-permission bridge to the local AI Workspace FastAPI service.
-version: 0.2.6
+version: 0.2.7
 author: dzx0902

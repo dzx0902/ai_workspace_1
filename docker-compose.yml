@@ -10,13 +10,14 @@ services:
 
   paper_radar:
     build:
-      context: ./paper_radar
+      context: ${PAPER_RADAR_AGENT_PATH:-../paper_radar_agent}
+    image: paper-radar-agent
     container_name: ai_paper_radar
     ports:
       - "8010:8010"
     volumes:
-      - ./paper_radar/data:/app/data
-      - ./paper_radar/notes:/app/notes
+      - paper_radar_data:/app/data
+      - paper_radar_notes:/app/notes
       - /mnt/f/ObsidianVault/AI/PaperRadar:/mnt/f/ObsidianVault/AI/PaperRadar
     environment:
       - PAPER_RADAR_TIMEZONE=Asia/Shanghai
@@ -27,16 +28,17 @@ services:
     restart: unless-stopped
 
   paper_radar_scheduler:
-    image: python:3.10-slim
+    build:
+      context: ${PAPER_RADAR_AGENT_PATH:-../paper_radar_agent}
+    image: paper-radar-agent
     container_name: ai_paper_radar_scheduler
-    working_dir: /workspace/paper_radar
     command: python scripts/scheduler.py
     volumes:
-      - /home/dzx0902/ai_workspace:/workspace
-      - /mnt/f:/mnt/f
+      - paper_radar_data:/app/data
+      - paper_radar_notes:/app/notes
+      - /mnt/f/ObsidianVault/AI/PaperRadar:/mnt/f/ObsidianVault/AI/PaperRadar
     environment:
       - PAPER_RADAR_TIMEZONE=Asia/Shanghai
-      - PYTHONPATH=/workspace/.venv/lib/python3.10/site-packages
       - PAPER_RADAR_LLM_PROVIDER=${LLM_PROVIDER:-deepseek}
       - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
       - DEEPSEEK_BASE_URL=${DEEPSEEK_BASE_URL}
@@ -86,3 +88,5 @@ volumes:
   astrbot_data:
     external: true
     name: ai_workspace_astrbot_data
+  paper_radar_data:
+  paper_radar_notes:

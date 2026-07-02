@@ -33,9 +33,8 @@ projects/
 repos/
 kb/
 
-# Paper Radar runtime data and generated notes
-paper_radar/data/
-paper_radar/notes/
+# Paper Radar lives in the sibling paper_radar_agent repository.
+paper_radar/
 
 # Local OS/editor noise
 .DS_Store
