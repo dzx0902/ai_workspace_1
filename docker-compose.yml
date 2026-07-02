@@ -1,0 +1,88 @@
+services:
+  chroma:
+    image: chromadb/chroma:latest
+    container_name: ai_chroma
+    ports:
+      - "8000:8000"
+    volumes:
+      - /mnt/f/AIWorkspace/kb/chroma-data:/data
+    restart: unless-stopped
+
+  paper_radar:
+    build:
+      context: ./paper_radar
+    container_name: ai_paper_radar
+    ports:
+      - "8010:8010"
+    volumes:
+      - ./paper_radar/data:/app/data
+      - ./paper_radar/notes:/app/notes
+      - /mnt/f/ObsidianVault/AI/PaperRadar:/mnt/f/ObsidianVault/AI/PaperRadar
+    environment:
+      - PAPER_RADAR_TIMEZONE=Asia/Shanghai
+      - PAPER_RADAR_LLM_PROVIDER=${LLM_PROVIDER:-deepseek}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+      - DEEPSEEK_BASE_URL=${DEEPSEEK_BASE_URL}
+      - DEEPSEEK_MODEL=${DEEPSEEK_MODEL}
+    restart: unless-stopped
+
+  paper_radar_scheduler:
+    image: python:3.10-slim
+    container_name: ai_paper_radar_scheduler
+    working_dir: /workspace/paper_radar
+    command: python scripts/scheduler.py
+    volumes:
+      - /home/dzx0902/ai_workspace:/workspace
+      - /mnt/f:/mnt/f
+    environment:
+      - PAPER_RADAR_TIMEZONE=Asia/Shanghai
+      - PYTHONPATH=/workspace/.venv/lib/python3.10/site-packages
+      - PAPER_RADAR_LLM_PROVIDER=${LLM_PROVIDER:-deepseek}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+      - DEEPSEEK_BASE_URL=${DEEPSEEK_BASE_URL}
+      - DEEPSEEK_MODEL=${DEEPSEEK_MODEL}
+      - CHROMA_HOST=chroma
+      - CHROMA_PORT=8000
+      - PAPER_RADAR_EMBED_PROVIDER=local
+      - PAPER_RADAR_EMBED_MODEL=/mnt/f/AIModels/bge-small-zh-v1.5
+      - PAPER_RADAR_EMBED_DEVICE=cpu
+    depends_on:
+      - paper_radar
+      - chroma
+    restart: unless-stopped
+
+  astrbot:
+    build:
+      context: .
+      dockerfile: Dockerfile.astrbot
+    image: ai_workspace-astrbot
+    container_name: ai_astrbot
+    ports:
+      - "6185:6185"
+    volumes:
+      - astrbot_data:/AstrBot/data
+      - /mnt/f:/mnt/f:ro
+      - /mnt/f/AIWorkspace/input:/workspace/input
+      - /mnt/f/AIWorkspace/uploads:/workspace/uploads
+      - /mnt/f/AIWorkspace/processed:/workspace/processed
+      - /mnt/f/AIWorkspace/notes:/workspace/notes
+      - /mnt/f/AIWorkspace/repos/allowed:/workspace/repos/allowed
+      - /mnt/f/AIWorkspace/tasks:/workspace/tasks
+      - /mnt/f/ObsidianVault/AI:/workspace/obsidian_ai
+    environment:
+      - AI_WORKSPACE_API_BASE=http://host.docker.internal:8001
+      - PAPER_RADAR_API_BASE=http://paper_radar:8010
+      - PAPER_RADAR_TIMEZONE=Asia/Shanghai
+      - PAPER_RADAR_SUBSCRIPTIONS=/AstrBot/data/paper_radar_subscriptions.json
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+      - DEEPSEEK_BASE_URL=${DEEPSEEK_BASE_URL}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - paper_radar
+    restart: unless-stopped
+
+volumes:
+  astrbot_data:
+    external: true
+    name: ai_workspace_astrbot_data

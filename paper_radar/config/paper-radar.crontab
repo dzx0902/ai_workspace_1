@@ -1,0 +1,13 @@
+SHELL=/bin/bash
+PATH=/usr/local/bin:/usr/bin:/bin
+CRON_TZ=Asia/Shanghai
+
+# Daily: feedback -> fetch/filter/LLM -> PDF -> topics -> RAG.
+30 7 * * * flock -n /tmp/paper-radar-daily.lock /home/dzx0902/ai_workspace/.venv/bin/python /home/dzx0902/ai_workspace/paper_radar/scripts/run_automation.py daily >> /home/dzx0902/ai_workspace/paper_radar/data/logs/automation-daily.log 2>&1
+
+# Weekly and monthly reviews.
+0 18 * * 0 flock -n /tmp/paper-radar-review.lock /home/dzx0902/ai_workspace/.venv/bin/python /home/dzx0902/ai_workspace/paper_radar/scripts/run_automation.py weekly >> /home/dzx0902/ai_workspace/paper_radar/data/logs/automation-review.log 2>&1
+30 18 1 * * flock -n /tmp/paper-radar-review.lock /home/dzx0902/ai_workspace/.venv/bin/python /home/dzx0902/ai_workspace/paper_radar/scripts/run_automation.py monthly >> /home/dzx0902/ai_workspace/paper_radar/data/logs/automation-review.log 2>&1
+
+# Midday maintenance catches Obsidian feedback and refreshes Chroma.
+30 12 * * * flock -n /tmp/paper-radar-maintenance.lock /home/dzx0902/ai_workspace/.venv/bin/python /home/dzx0902/ai_workspace/paper_radar/scripts/run_automation.py maintenance >> /home/dzx0902/ai_workspace/paper_radar/data/logs/automation-maintenance.log 2>&1

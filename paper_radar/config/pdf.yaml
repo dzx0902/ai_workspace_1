@@ -1,0 +1,14 @@
+pdf_download_dir: data/pdfs
+extracted_text_dir: data/extracted_texts
+paper_notes_dir: notes/papers
+obsidian_paper_notes_dir: /mnt/f/ObsidianVault/AI/PaperRadar/Papers
+max_pdf_per_run: 10
+download_timeout: 60
+allowed_sources:
+  - arxiv
+  - biorxiv
+  - medrxiv
+  - openreview
+min_llm_score_for_download: 8
+overwrite_existing_pdf: false
+max_fulltext_chars_for_llm: 120000

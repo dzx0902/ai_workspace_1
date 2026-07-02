@@ -1,0 +1,118 @@
+sources:
+  - name: arXiv Computer Vision
+    type: arxiv_rss
+    url: https://rss.arxiv.org/rss/cs.CV
+    category: cs.CV
+    enabled: true
+    fetch_interval: daily
+    description: Computer vision and pattern recognition.
+  - name: arXiv Machine Learning
+    type: arxiv_rss
+    url: https://rss.arxiv.org/rss/cs.LG
+    category: cs.LG
+    enabled: true
+    fetch_interval: daily
+    description: Machine learning.
+  - name: arXiv Artificial Intelligence
+    type: arxiv_rss
+    url: https://rss.arxiv.org/rss/cs.AI
+    category: cs.AI
+    enabled: true
+    fetch_interval: daily
+    description: Artificial intelligence.
+  - name: arXiv Computation and Language
+    type: arxiv_rss
+    url: https://rss.arxiv.org/rss/cs.CL
+    category: cs.CL
+    enabled: true
+    fetch_interval: daily
+    description: Computation and language.
+  - name: arXiv Signal Processing
+    type: arxiv_rss
+    url: https://rss.arxiv.org/rss/eess.SP
+    category: eess.SP
+    enabled: true
+    fetch_interval: daily
+    description: Signal processing.
+  - name: arXiv Image and Video Processing
+    type: arxiv_rss
+    url: https://rss.arxiv.org/rss/eess.IV
+    category: eess.IV
+    enabled: true
+    fetch_interval: daily
+    description: Image and video processing.
+  - name: arXiv Neurons and Cognition
+    type: arxiv_rss
+    url: https://rss.arxiv.org/rss/q-bio.NC
+    category: q-bio.NC
+    enabled: true
+    fetch_interval: daily
+    description: Neurons and cognition.
+  - name: arXiv Machine Learning Statistics
+    type: arxiv_rss
+    url: https://rss.arxiv.org/rss/stat.ML
+    category: stat.ML
+    enabled: true
+    fetch_interval: daily
+    description: Machine learning statistics.
+
+  - name: bioRxiv Neuroscience
+    type: biorxiv
+    url: https://api.biorxiv.org/details
+    category: neuroscience
+    subject_filter: neuroscience
+    enabled: true
+    fetch_interval: daily
+    recent_days: 7
+    description: Recent bioRxiv neuroscience preprints.
+
+  - name: medRxiv Neurology
+    type: medrxiv
+    url: https://api.biorxiv.org/details
+    category: neurology
+    enabled: true
+    fetch_interval: daily
+    recent_days: 7
+    description: Recent medRxiv clinical and neurological preprints.
+
+  - name: PubMed EEG and Neural Decoding
+    type: pubmed
+    query: (EEG OR electroencephalography) AND (deep learning OR decoding OR representation learning)
+    category: brain-signals
+    enabled: true
+    fetch_interval: daily
+    description: PubMed search for EEG learning and decoding.
+
+  - name: PubMed fMRI and Neuroimaging
+    type: pubmed
+    query: (fMRI OR neuroimaging) AND (deep learning OR foundation model OR decoding)
+    category: neuroimaging
+    enabled: true
+    fetch_interval: daily
+    description: PubMed search for fMRI and neuroimaging methods.
+
+  - name: PubMed BCI
+    type: pubmed
+    query: (brain-computer interface OR BCI) AND (deep learning OR transformer OR diffusion)
+    category: bci
+    enabled: true
+    fetch_interval: daily
+    description: PubMed search for modern BCI methods.
+
+  - name: OpenReview ICLR
+    type: openreview
+    url: https://api2.openreview.net/notes
+    venue: ICLR.cc/2026/Conference
+    invitation: ICLR.cc/2026/Conference/-/Submission
+    category: ICLR
+    enabled: true
+    fetch_interval: daily
+    description: OpenReview submission fetcher; set OPENREVIEW_TOKEN if anonymous API requests are challenged.
+
+  - name: Hugging Face Daily Papers
+    type: huggingface
+    url: https://huggingface.co/papers/rss
+    category: daily-papers
+    enabled: false
+    fetch_interval: daily
+    description: Hugging Face Daily Papers RSS currently returns HTTP 401; keep disabled until a public feed is available.

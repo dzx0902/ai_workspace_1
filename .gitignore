@@ -1,0 +1,44 @@
+# Secrets and local environment
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+
+# Logs and runtime output
+logs/
+*.log
+tmp/
+
+# AstrBot runtime data, generated dashboard assets, databases, and uploaded files
+astrbot-data/
+input/
+inbox/
+uploads/
+processed/
+notes/
+notes_out/
+tasks/
+projects/
+repos/
+kb/
+
+# Paper Radar runtime data and generated notes
+paper_radar/data/
+paper_radar/notes/
+
+# Local OS/editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

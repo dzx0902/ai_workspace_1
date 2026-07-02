@@ -1,0 +1,4 @@
+obsidian_output_dir: /mnt/f/ObsidianVault/AI/PaperRadar
+daily_filename_format: "%Y-%m-%d-paper-radar.md"
+write_local_copy: true
+local_output_dir: notes/daily
