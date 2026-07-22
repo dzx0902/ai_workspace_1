@@ -1,3 +1,4 @@
+# Legacy local-development stack. Production deployment uses ../ai-platform-infra.
 services:
   chroma:
     image: chromadb/chroma:latest
@@ -28,6 +29,7 @@ services:
     restart: unless-stopped
 
   paper_radar_scheduler:
+    profiles: ["legacy-scheduler"]
     build:
       context: ${PAPER_RADAR_AGENT_PATH:-../paper_radar_agent}
     image: paper-radar-agent
@@ -75,6 +77,7 @@ services:
       - AI_WORKSPACE_API_BASE=http://host.docker.internal:8001
       - PAPER_RADAR_API_BASE=http://paper_radar:8010
       - PAPER_RADAR_TIMEZONE=Asia/Shanghai
+      - PLATFORM_SCHEDULER_ENABLED=0
       - PAPER_RADAR_SUBSCRIPTIONS=/AstrBot/data/paper_radar_subscriptions.json
       - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
       - DEEPSEEK_BASE_URL=${DEEPSEEK_BASE_URL}

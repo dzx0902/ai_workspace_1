@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import os
 from functools import lru_cache
 from pathlib import Path
 
 from openai import OpenAI
+import requests
 
 from scripts.config import (
     GEN_PROVIDER,
@@ -18,6 +20,7 @@ from scripts.config import (
     SILICONFLOW_MODEL,
     LLM_MAX_TOKENS,
     LLM_TEMPERATURE,
+    AI_PLATFORM_LLM_URL,
     get_embed_config,
 )
 
@@ -42,6 +45,19 @@ def get_embedder():
 
 
 def local_embed(text: str) -> list[float]:
+    cfg = get_embed_config()
+    if cfg.provider != 'local':
+        if AI_PLATFORM_LLM_URL:
+            embedding_url = AI_PLATFORM_LLM_URL.rsplit('/', 1)[0] + '/embeddings'
+            response = requests.post(embedding_url, json={'input': text, 'model': cfg.model}, timeout=120)
+            response.raise_for_status()
+            return response.json()['data'][0]['embedding']
+        api_key = DEEPSEEK_API_KEY if cfg.provider == 'deepseek' else os.getenv('OPENAI_API_KEY', '')
+        base_url = DEEPSEEK_BASE_URL if cfg.provider == 'deepseek' else os.getenv('OPENAI_BASE_URL', 'https://api.openai.com/v1')
+        if not api_key:
+            raise RuntimeError(f'Embedding API key is empty for provider {cfg.provider}.')
+        response = OpenAI(api_key=api_key, base_url=base_url).embeddings.create(model=cfg.model, input=text)
+        return response.data[0].embedding
     model = get_embedder()
     emb = model.encode(text, normalize_embeddings=True, show_progress_bar=False)
     return emb.tolist()
@@ -91,6 +107,21 @@ def siliconflow_generate(prompt: str) -> str:
 
 
 def generate(prompt: str, mode: str = 'auto') -> str:
+    if AI_PLATFORM_LLM_URL and mode in ('auto', 'api'):
+        response = requests.post(
+            AI_PLATFORM_LLM_URL,
+            json={
+                'messages': [
+                    {'role': 'system', 'content': '你是一个严谨的中文学习、科研和编程助手。回答要结构清晰，避免编造。'},
+                    {'role': 'user', 'content': prompt},
+                ],
+                'temperature': LLM_TEMPERATURE,
+                'max_tokens': LLM_MAX_TOKENS,
+            },
+            timeout=120,
+        )
+        response.raise_for_status()
+        return str(response.json().get('content', ''))
     provider = GEN_PROVIDER if mode in ('auto', 'api') else mode
     provider = provider.lower().strip()
     if provider == 'deepseek':

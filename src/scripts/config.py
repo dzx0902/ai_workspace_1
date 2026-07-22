@@ -19,7 +19,10 @@ def _path_env(name: str, default: str) -> Path:
 
 
 APP_ENV = _env('APP_ENV', 'local')
-WORKSPACE_ROOT = _path_env('WORKSPACE_ROOT', '/mnt/f/AIWorkspace')
+DATA_DIR = _path_env('DATA_DIR', './data')
+CONFIG_DIR = _path_env('CONFIG_DIR', './config')
+LOG_DIR = _path_env('LOG_DIR', str(DATA_DIR / 'logs'))
+WORKSPACE_ROOT = _path_env('WORKSPACE_ROOT', str(DATA_DIR / 'workspace'))
 
 INPUT_ROOT = _path_env('INPUT_ROOT', str(WORKSPACE_ROOT / 'input'))
 UPLOADS_ROOT = _path_env('UPLOADS_ROOT', str(WORKSPACE_ROOT / 'uploads'))
@@ -33,9 +36,9 @@ READ_REPOS_ROOT = _path_env('READ_REPOS_ROOT', str(REPOS_ROOT))
 WRITE_REPOS_ROOT = _path_env('WRITE_REPOS_ROOT', str(WORKSPACE_ROOT / 'repos' / 'allowed'))
 TASKS_ROOT = _path_env('TASKS_ROOT', str(WORKSPACE_ROOT / 'tasks'))
 KB_DIR = _path_env('KB_DIR', str(WORKSPACE_ROOT / 'kb'))
-LOG_DIR = _path_env('LOG_DIR', str(WORKSPACE_ROOT / 'logs'))
+LOG_DIR = _path_env('LOG_DIR', str(LOG_DIR))
 
-OBSIDIAN_VAULT = _path_env('OBSIDIAN_VAULT', '/mnt/f/ObsidianVault')
+OBSIDIAN_VAULT = _path_env('OBSIDIAN_VAULT', str(WORKSPACE_ROOT / 'knowledge'))
 OBSIDIAN_AI_ROOT = _path_env('OBSIDIAN_AI_ROOT', str(OBSIDIAN_VAULT / 'AI'))
 OBSIDIAN_OUT = _path_env('OBSIDIAN_OUT', str(OBSIDIAN_AI_ROOT))
 
@@ -58,9 +61,10 @@ SILICONFLOW_API_KEY = os.getenv('SILICONFLOW_API_KEY', '')
 SILICONFLOW_BASE_URL = _env('SILICONFLOW_BASE_URL', 'https://api.siliconflow.cn/v1')
 SILICONFLOW_MODEL = _env('SILICONFLOW_MODEL', 'Qwen/Qwen2.5-7B-Instruct')
 
-EMBED_PROVIDER = _env('EMBED_PROVIDER', 'local')
-EMBED_MODEL = _env('EMBED_MODEL', '/mnt/f/AIModels/bge-small-zh-v1.5')
+EMBED_PROVIDER = _env('EMBED_PROVIDER', 'openai')
+EMBED_MODEL = _env('EMBED_MODEL', 'text-embedding-3-small')
 EMBED_DEVICE = _env('EMBED_DEVICE', 'cpu')
+AI_PLATFORM_LLM_URL = _env('AI_PLATFORM_LLM_URL', '')
 
 CHROMA_HOST = _env('CHROMA_HOST', 'localhost')
 CHROMA_PORT = int(_env('CHROMA_PORT', '8000'))
