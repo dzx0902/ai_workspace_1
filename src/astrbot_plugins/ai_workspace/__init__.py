@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from .utils import command_args, initial_last_sent
+from .utils import command_args, format_planner_result, format_today_tasks, initial_last_sent
 
-__all__ = ["AIWorkspacePlugin", "command_args", "initial_last_sent"]
+__all__ = ["AIWorkspacePlugin", "command_args", "format_planner_result", "format_today_tasks", "initial_last_sent"]
 
 
 def __getattr__(name: str):
