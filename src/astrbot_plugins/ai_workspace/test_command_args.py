@@ -29,11 +29,11 @@ def test_initial_last_sent_defers_subscriptions_created_after_scheduled_time():
 
 
 def test_positive_option_bounds_and_validates_command_limit():
-    assert positive_option(["--limit", "5"], "--limit", default=20, maximum=30) == 5
-    assert positive_option(["--limit", "100"], "--limit", default=20, maximum=30) == 30
-    assert positive_option([], "--limit", default=20, maximum=30) == 20
+    assert positive_option(["--limit", "5"], "--limit", default=5, maximum=10) == 5
+    assert positive_option(["--limit", "100"], "--limit", default=5, maximum=10) == 10
+    assert positive_option([], "--limit", default=5, maximum=10) == 5
     with pytest.raises(ValueError):
-        positive_option(["--limit"], "--limit", default=20, maximum=30)
+        positive_option(["--limit"], "--limit", default=5, maximum=10)
 
 
 def test_planner_chat_formatting_is_compact_and_uses_local_time():

@@ -88,14 +88,17 @@ class PaperCommands:
         """查看指定日期的论文雷达摘要。用法：/papers [YYYY-MM-DD] [数量]"""
         args = command_args(event.message_str, "papers")
         report_date = args[0] if args else datetime.now(PAPER_TIMEZONE).date().isoformat()
-        limit = int(args[1]) if len(args) > 1 else 20
+        try:
+            limit = max(1, min(int(args[1]), 10)) if len(args) > 1 else 5
+        except ValueError:
+            yield event.plain_result("数量需要是 1 到 10 之间的整数，例如 /papers 2026-07-23 5")
+            return
         data = await asyncio.to_thread(
             self.paper_client.get_params,
             "/papers/daily",
-            {"date": report_date, "limit": max(1, min(limit, 30))},
+            {"date": report_date, "limit": limit},
         )
-        for chunk in split_message(data["message"]):
-            yield event.plain_result(chunk)
+        yield event.plain_result(data["message"])
 
     @filter.command("paper")
     async def paper(self, event: AstrMessageEvent):
@@ -117,9 +120,9 @@ class PaperCommands:
         if "--date" in args and args.index("--date") + 1 < len(args):
             report_date = args[args.index("--date") + 1]
         try:
-            report_limit = positive_option(args, "--limit", default=20, maximum=30)
+            report_limit = positive_option(args, "--limit", default=5, maximum=10)
         except ValueError:
-            yield event.plain_result("--limit 需要 1 到 30 之间的整数，例如 /paper_run --llm --limit 5")
+            yield event.plain_result("--limit 需要 1 到 10 之间的整数，例如 /paper_run --llm --limit 5")
             return
         data = await asyncio.to_thread(
             self.paper_client.post,
@@ -132,8 +135,7 @@ class PaperCommands:
             },
             300,
         )
-        for chunk in split_message(data["message"]):
-            yield event.plain_result(chunk)
+        yield event.plain_result(data["message"])
 
     @filter.command("paper_subscribe")
     async def paper_subscribe(self, event: AstrMessageEvent):
