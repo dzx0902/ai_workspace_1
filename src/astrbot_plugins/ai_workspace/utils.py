@@ -22,6 +22,16 @@ def initial_last_sent(scheduled_time: str, now: datetime) -> str:
     return ""
 
 
+def positive_option(args: list[str], option: str, default: int, maximum: int) -> int:
+    """Read a positive bounded integer option from an AstrBot command."""
+    if option not in args:
+        return default
+    index = args.index(option)
+    if index + 1 >= len(args):
+        raise ValueError(f"{option} requires a value")
+    return max(1, min(int(args[index + 1]), maximum))
+
+
 def text_result(data: dict) -> str:
     if "answer" in data:
         return data["answer"]

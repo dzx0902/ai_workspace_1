@@ -9,7 +9,7 @@ from astrbot.api import logger
 from astrbot.api.event import AstrMessageEvent, MessageChain, filter
 
 from ..config import PAPER_TIMEZONE, SUBSCRIPTIONS_FILE
-from ..utils import command_args, initial_last_sent, split_message
+from ..utils import command_args, initial_last_sent, positive_option, split_message
 
 
 class PaperCommands:
@@ -110,23 +110,25 @@ class PaperCommands:
 
     @filter.command("paper_run")
     async def paper_run(self, event: AstrMessageEvent):
-        """立即更新论文雷达。默认不调用 LLM；添加 --llm 可启用。"""
+        """立即更新论文雷达。--limit 同时限制评分和聊天展示数量。"""
         args = command_args(event.message_str, "paper_run")
         use_llm = "--llm" in args
         report_date = datetime.now(PAPER_TIMEZONE).date().isoformat()
-        limit_llm = 20
         if "--date" in args and args.index("--date") + 1 < len(args):
             report_date = args[args.index("--date") + 1]
-        if "--limit" in args and args.index("--limit") + 1 < len(args):
-            limit_llm = int(args[args.index("--limit") + 1])
+        try:
+            report_limit = positive_option(args, "--limit", default=20, maximum=30)
+        except ValueError:
+            yield event.plain_result("--limit 需要 1 到 30 之间的整数，例如 /paper_run --llm --limit 5")
+            return
         data = await asyncio.to_thread(
             self.paper_client.post,
             "/papers/run",
             {
                 "date": report_date,
-                "limit_llm": max(1, limit_llm),
+                "limit_llm": report_limit,
                 "no_llm": not use_llm,
-                "report_limit": 20,
+                "report_limit": report_limit,
             },
             300,
         )
