@@ -13,6 +13,36 @@ from ..utils import command_args, initial_last_sent, positive_option, split_mess
 
 
 class PaperCommands:
+    def _format_platform_paper_schedule(self, data: dict) -> str:
+        enabled = "开启" if data.get("enabled", True) else "关闭"
+        time = data.get("time") or data.get("cron") or "未知"
+        body = data.get("body") if isinstance(data.get("body"), dict) else {}
+        mode = "关键词筛选" if body.get("no_llm", False) else "LLM 评分"
+        limit = body.get("report_limit") or body.get("limit_llm") or 20
+        last_run = data.get("last_run") or "暂无"
+        return (
+            f"论文定时推送：{enabled}\n"
+            f"时间：每天 {time}（{PAPER_TIMEZONE.key}）\n"
+            f"模式：{mode}，Top {limit}\n"
+            f"上次触发：{last_run}"
+        )
+
+    def _platform_schedule_body_patch(self, args: list[str], current_body: dict) -> dict | None:
+        body = dict(current_body)
+        changed = False
+        if "--llm" in args:
+            body["no_llm"] = False
+            changed = True
+        if "--no-llm" in args:
+            body["no_llm"] = True
+            changed = True
+        if "--limit" in args:
+            report_limit = positive_option(args, "--limit", default=5, maximum=30)
+            body["report_limit"] = report_limit
+            body["limit_llm"] = report_limit
+            changed = True
+        return body if changed else None
+
     def _load_subscriptions(self) -> dict:
         if not SUBSCRIPTIONS_FILE.exists():
             return {}
@@ -136,6 +166,44 @@ class PaperCommands:
             300,
         )
         yield event.plain_result(data["message"])
+
+    @filter.command("paper_schedule")
+    async def paper_schedule(self, event: AstrMessageEvent):
+        """管理平台级论文定时推送。用法：/paper_schedule [HH:MM|on|off|run] [--llm|--no-llm] [--limit N]"""
+        args = command_args(event.message_str, "paper_schedule")
+        try:
+            if not args or args[0] in {"status", "show"}:
+                data = await asyncio.to_thread(self.scheduler_client.get, "/v1/jobs/paper_daily")
+                yield event.plain_result(self._format_platform_paper_schedule(data))
+                return
+
+            action = args[0].lower()
+            if action in {"run", "now"}:
+                await asyncio.to_thread(self.scheduler_client.post, "/v1/jobs/paper_daily/run", {}, 300)
+                yield event.plain_result("已触发论文定时任务，结果会推送到论文机器人。")
+                return
+
+            if action in {"on", "off"}:
+                data = await asyncio.to_thread(
+                    self.scheduler_client.patch,
+                    "/v1/jobs/paper_daily",
+                    {"enabled": action == "on"},
+                )
+                yield event.plain_result(self._format_platform_paper_schedule(data))
+                return
+
+            datetime.strptime(args[0], "%H:%M")
+            patch = {"time": args[0]}
+            current = await asyncio.to_thread(self.scheduler_client.get, "/v1/jobs/paper_daily")
+            body = self._platform_schedule_body_patch(args[1:], current.get("body", {}))
+            if body is not None:
+                patch["body"] = body
+            data = await asyncio.to_thread(self.scheduler_client.patch, "/v1/jobs/paper_daily", patch)
+            yield event.plain_result(self._format_platform_paper_schedule(data))
+        except ValueError:
+            yield event.plain_result("用法：/paper_schedule [HH:MM|on|off|run] [--llm|--no-llm] [--limit N]")
+        except Exception as exc:
+            yield event.plain_result(f"调度器暂时不可用：{exc}")
 
     @filter.command("paper_subscribe")
     async def paper_subscribe(self, event: AstrMessageEvent):

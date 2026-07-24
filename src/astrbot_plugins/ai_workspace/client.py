@@ -23,12 +23,18 @@ class JsonApiClient:
         return self.get(f"{path}?{query}", timeout=timeout)
 
     def post(self, path: str, payload: dict, timeout: int | None = None) -> dict:
+        return self._json_request("POST", path, payload, timeout)
+
+    def patch(self, path: str, payload: dict, timeout: int | None = None) -> dict:
+        return self._json_request("PATCH", path, payload, timeout)
+
+    def _json_request(self, method: str, path: str, payload: dict, timeout: int | None = None) -> dict:
         data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
         req = urllib.request.Request(
             f"{self.base_url}{path}",
             data=data,
             headers={"Content-Type": "application/json"},
-            method="POST",
+            method=method,
         )
         try:
             with urllib.request.urlopen(req, timeout=timeout or self.default_timeout) as resp:

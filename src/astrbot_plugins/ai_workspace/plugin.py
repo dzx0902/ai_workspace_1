@@ -6,7 +6,14 @@ from astrbot.api.star import Context, Star
 
 from .client import JsonApiClient
 from .commands import DevCommands, FinanceCommands, PaperCommands, PlannerCommands, WorkspaceCommands
-from .config import API_BASE, FINANCE_API_BASE, PAPER_API_BASE, PLANNER_API_BASE, PLATFORM_SCHEDULER_ENABLED
+from .config import (
+    API_BASE,
+    FINANCE_API_BASE,
+    PAPER_API_BASE,
+    PLANNER_API_BASE,
+    PLATFORM_SCHEDULER_ENABLED,
+    SCHEDULER_API_BASE,
+)
 
 
 class AIWorkspacePlugin(PaperCommands, PlannerCommands, FinanceCommands, DevCommands, WorkspaceCommands, Star):
@@ -16,6 +23,7 @@ class AIWorkspacePlugin(PaperCommands, PlannerCommands, FinanceCommands, DevComm
         self.paper_client = JsonApiClient(PAPER_API_BASE, default_timeout=60)
         self.planner_client = JsonApiClient(PLANNER_API_BASE, default_timeout=60)
         self.finance_client = JsonApiClient(FINANCE_API_BASE, default_timeout=60)
+        self.scheduler_client = JsonApiClient(SCHEDULER_API_BASE, default_timeout=60)
         self.paper_scheduler_task: asyncio.Task | None = None
         if not PLATFORM_SCHEDULER_ENABLED:
             self.paper_scheduler_task = asyncio.create_task(self._paper_scheduler())

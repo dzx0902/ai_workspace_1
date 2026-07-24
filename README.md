@@ -64,6 +64,24 @@ PAPER_RADAR_AGENT_PATH=/path/to/paper_radar_agent
 docker compose up -d --build
 ```
 
+## AstrBot 论文命令
+
+平台部署后，飞书里的 AstrBot 入口可以直接管理论文 agent：
+
+```text
+/paper_run --llm --limit 5
+/paper_schedule
+/paper_schedule 08:00 --llm --limit 5
+/paper_schedule off
+/paper_schedule on
+/paper_schedule run
+```
+
+- `/paper_run`：立即在当前聊天返回一次论文雷达结果。
+- `/paper_schedule`：查看平台级每日论文推送设置。
+- `/paper_schedule 08:00`：把每日自动推送改到北京时间 08:00。
+- `/paper_schedule run`：立即触发平台 scheduler，结果按通知路由推送到论文机器人或论文群。
+
 ## 迁移提醒
 
 - `.env`、数据库、日志、PDF、上传文件、AstrBot 运行数据不会提交到 Git。
