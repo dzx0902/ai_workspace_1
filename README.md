@@ -75,12 +75,14 @@ docker compose up -d --build
 /paper_schedule off
 /paper_schedule on
 /paper_schedule run
+/paper_schedule doctor
 ```
 
 - `/paper_run`：立即在当前聊天返回一次论文雷达结果。
 - `/paper_schedule`：查看平台级每日论文推送设置。
 - `/paper_schedule 08:00`：把每日自动推送改到北京时间 08:00。
 - `/paper_schedule run`：立即触发平台 scheduler，结果按通知路由推送到论文机器人或论文群。
+- `/paper_schedule doctor`：诊断 scheduler、下次触发时间、最近失败原因和论文 webhook 是否已配置。
 
 ## 迁移提醒
 
