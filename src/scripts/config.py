@@ -51,7 +51,7 @@ LLM_MAX_TOKENS = int(_env('LLM_MAX_TOKENS', '4096'))
 
 DEEPSEEK_API_KEY = os.getenv('DEEPSEEK_API_KEY', '')
 DEEPSEEK_BASE_URL = _env('DEEPSEEK_BASE_URL', 'https://api.deepseek.com/v1')
-DEEPSEEK_MODEL = _env('DEEPSEEK_MODEL', 'deepseek-chat')
+DEEPSEEK_MODEL = _env('DEEPSEEK_MODEL', 'deepseek-flash')
 
 DASHSCOPE_API_KEY = os.getenv('DASHSCOPE_API_KEY', '')
 DASHSCOPE_BASE_URL = _env('DASHSCOPE_BASE_URL', 'https://dashscope.aliyuncs.com/compatible-mode/v1')

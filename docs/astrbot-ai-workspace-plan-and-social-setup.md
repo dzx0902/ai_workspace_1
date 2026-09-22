@@ -5,7 +5,7 @@
 当前系统已经具备：
 
 - AstrBot WebUI 可访问：`http://localhost:6185`
-- 默认模型：`deepseek-chat`
+- 默认模型：`deepseek-flash`（AstrBot 中已保存的提供商需在 WebUI 单独更新）
 - `ai_workspace` 插件已能被 AstrBot 加载
 - AstrBot 数据已迁移到 Docker volume：`ai_workspace_astrbot_data`
 - AI Workspace 后端通过 FastAPI 提供 `/file`、`/ask`、`/web`、`/video`、`/dev/*` 等接口
@@ -205,8 +205,8 @@ http://localhost:6185
 确保：
 
 ```text
-deepseek-chat 可用
-default_provider_id = deepseek-chat
+deepseek-flash 可用
+default_provider_id = 你在 AstrBot 中配置的 DeepSeek 提供商 ID
 ```
 
 设置管理员 ID：

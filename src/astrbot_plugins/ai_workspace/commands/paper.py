@@ -207,8 +207,11 @@ class PaperCommands:
                 return
 
             if action in {"run", "now"}:
-                await asyncio.to_thread(self.scheduler_client.post, "/v1/jobs/paper_daily/run", {}, 300)
-                yield event.plain_result("已触发论文定时任务，结果会推送到论文机器人。")
+                result = await asyncio.to_thread(self.scheduler_client.post, "/v1/jobs/paper_daily/run", {}, 300)
+                if result.get("partial"):
+                    yield event.plain_result("论文报告已推送，但部分 LLM 评分失败；详情已写在报告开头，后续会自动重试。")
+                else:
+                    yield event.plain_result("已完成论文定时任务，结果已推送到论文机器人。")
                 return
 
             if action in {"on", "off"}:
